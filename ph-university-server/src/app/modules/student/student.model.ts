@@ -7,8 +7,6 @@ import {
   TStudentModel,
   TUserName,
 } from "./student.interface";
-import bycrypt from "bcrypt";
-import config from "../../config";
 
 // step 2 - schema
 const userNameSchema = new Schema<TUserName>({
@@ -88,11 +86,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       unique: true,
       ref: "User",
     },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      maxlength: [20, "Max length is 20 characters"],
-    },
+
     name: {
       type: userNameSchema,
       required: [true, "Student name is required"],
@@ -163,22 +157,6 @@ studentSchema.virtual("fullName").get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
-// middleware - pre
-studentSchema.pre("save", async function (next) {
-  const user = this;
-  user.password = await bycrypt.hash(
-    user.password,
-    Number(config.bycrypt_salt_rounds)
-  );
-  next();
-});
-
-// middleware - post
-studentSchema.post("save", async function (doc, next) {
-  doc.password = "";
-  next();
-});
-
 // middleware - query
 studentSchema.pre("find", async function (next) {
   this.find({ isDeleted: { $ne: true } });
@@ -196,12 +174,6 @@ studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
 };
-
-// custom instance method
-// studentSchema.methods.isUserExists = async function (id: string) {
-//   const existingUser = await Student.findOne({ id });
-//   return existingUser;
-// };
 
 // step - 3 create model
 export const Student = model<TStudent, TStudentModel>("Student", studentSchema);

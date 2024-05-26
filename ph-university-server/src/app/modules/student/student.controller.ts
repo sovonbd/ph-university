@@ -1,62 +1,62 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StudentService } from "./student.service";
+import sendResponse from "../../../sendResponse";
+import httpStatus from "http-status";
 
-const getAllStudents = async (req: Request, res: Response) => {
+const getAllStudents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const result = await StudentService.getAllStudentsFromDB();
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      mesage: "Students are retrived successfully",
+      message: "Students are retrived successfully",
       data: result,
     });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      success: false,
-      message: "Something is wrong",
-      data: error,
-    });
+    next(error);
   }
 };
 
-const getSingleStudent = async (req: Request, res: Response) => {
+const getSingleStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id: studentId } = req.params;
     const result = await StudentService.getSingleStudentFromDB(studentId);
-    console.log(result);
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: "Student is retrived successfully",
       data: result,
     });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      success: false,
-      message: "Something is wrong",
-      data: error,
-    });
+    next(error);
   }
 };
 
-const deleteStudent = async (req: Request, res: Response) => {
+const deleteStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id: studentId } = req.params;
-    console.log(studentId);
     const result = await StudentService.deleteStudentsFromDB(studentId);
-    console.log(result);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: "Delete student successfully",
       data: result,
     });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      success: false,
-      message: "Something is wrong",
-      data: error,
-    });
+    next(error);
   }
 };
 

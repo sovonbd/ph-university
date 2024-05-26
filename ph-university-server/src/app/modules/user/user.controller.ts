@@ -1,26 +1,29 @@
-import { Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
+import sendResponse from "../../../sendResponse";
+import httpStatus from "http-status";
 
-const createStudent = async (req: Request, res: Response) => {
+const createStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { password: string, student: studentData } = req.body;
+    const { password, student: studentData } = req.body;
 
     const result = await UserServices.createStudentIntoDB(
       password,
       studentData
     );
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      mesage: "Student is created successfully",
+      message: "Student is created successfully",
       data: result,
     });
   } catch (error: any) {
-    console.log(error);
-    res.status(400).json({
-      success: false,
-      message: error.message || "Something is wrong",
-      data: error,
-    });
+    next(error);
   }
 };
 

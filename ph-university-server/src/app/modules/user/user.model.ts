@@ -1,5 +1,7 @@
 import { model, Schema } from "mongoose";
 import { TUser } from "./user.interface";
+import config from "../../config";
+import bycrypt from "bcrypt";
 
 const userSchema = new Schema<TUser>(
   {
@@ -18,5 +20,22 @@ const userSchema = new Schema<TUser>(
     timestamps: true, // createdAt and updatedAt
   }
 );
+
+// middleware - pre
+userSchema.pre("save", async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bycrypt.hash(
+    user.password,
+    Number(config.bycrypt_salt_rounds)
+  );
+  next();
+});
+
+// middleware - post
+userSchema.post("save", async function (doc, next) {
+  doc.password = "";
+  next();
+});
 
 export const User = model<TUser>("User", userSchema);
