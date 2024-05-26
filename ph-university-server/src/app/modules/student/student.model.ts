@@ -7,7 +7,6 @@ import {
   TStudentModel,
   TUserName,
 } from "./student.interface";
-import validator from "validator";
 import bycrypt from "bcrypt";
 import config from "../../config";
 
@@ -33,10 +32,6 @@ const userNameSchema = new Schema<TUserName>({
   lastName: {
     type: String,
     required: [true, "Last Name is required"],
-    validate: {
-      validator: (value: string) => validator.isAlpha(value),
-      message: "{VALUE} is not valid entry",
-    },
   },
 });
 
@@ -86,6 +81,12 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       type: String,
       required: [true, "Student ID is required"],
       unique: true,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, "User id is required"],
+      unique: true,
+      ref: "User",
     },
     password: {
       type: String,
@@ -144,10 +145,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
     profileImg: {
       type: String,
     },
-    isActive: {
-      type: String,
-      default: "active",
-    },
+
     isDeleted: {
       type: Boolean,
       default: false,
