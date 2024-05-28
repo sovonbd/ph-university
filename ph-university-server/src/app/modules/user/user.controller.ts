@@ -1,31 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
-import sendResponse from "../../../sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
+import catchAsynch from "../../utils/catchAsync";
 
-const createStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { password, student: studentData } = req.body;
+const createStudent = catchAsynch(async (req, res, next) => {
+  const { password, student: studentData } = req.body;
 
-    const result = await UserServices.createStudentIntoDB(
-      password,
-      studentData
-    );
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Student is created successfully",
-      data: result,
-    });
-  } catch (error: any) {
-    next(error);
-  }
-};
+  const result = await UserServices.createStudentIntoDB(password, studentData);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Student is created successfully",
+    data: result,
+  });
+});
 
 export const UserControllers = {
   createStudent,

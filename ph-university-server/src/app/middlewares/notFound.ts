@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 import httpStatus from "http-status";
 
-const notFound = (req: Request, res: Response, next: NextFunction) => {
+const notFound: RequestHandler = (req, res, next) => {
   const stautsCode = httpStatus.NOT_FOUND;
   return res.status(stautsCode).json({
     success: false,
