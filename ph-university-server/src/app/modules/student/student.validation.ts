@@ -63,6 +63,7 @@ const createStudentValidationSchema = z.object({
         }
       ),
       profileImg: z.string().optional(),
+      admissionSemester: z.string(),
     }),
   }),
 });
