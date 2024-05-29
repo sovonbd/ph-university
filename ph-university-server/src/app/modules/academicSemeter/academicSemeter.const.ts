@@ -26,3 +26,10 @@ export const AcademicSemesterName: TAcademicSemesterName[] = [
 ];
 
 export const AcademicSemesterCode: TAcademicSemesterCode[] = ["01", "02", "03"];
+
+// check semester name with semester code
+export const academicSemesterNameCodeMapper: TAcademicSemesterNameCodeMapper = {
+  Winter: "01",
+  Summer: "02",
+  Fall: "03",
+};
