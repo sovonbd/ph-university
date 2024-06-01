@@ -11,20 +11,22 @@ const getAllAcademicFacultiesFromDB = async () => {
   return result;
 };
 
-const getSingleAcademicFacultyFromDB = async (id: string) => {
-  const result = await AcademicFaculty.findById(id);
+const getSingleAcademicFacultyFromDB = async (facultyId: string) => {
+  const result = await AcademicFaculty.findById(facultyId);
   return result;
 };
 
 const updateAcademicFacultyIntoDB = async (
-  id: string,
+  facultyId: string,
   payload: Partial<TAcademicFaculty>
 ) => {
-  // academicSemesterNameCodeMapper['Fall'] = 01
-
-  const result = await AcademicFaculty.findOneAndUpdate({ _id: id }, payload, {
-    new: true,
-  });
+  const result = await AcademicFaculty.findOneAndUpdate(
+    { _id: facultyId },
+    payload,
+    {
+      new: true,
+    }
+  );
   return result;
 };
 
