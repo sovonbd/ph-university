@@ -143,6 +143,10 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       type: Schema.Types.ObjectId,
       ref: "AcademicSemester",
     },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicDepartment",
+    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -155,22 +159,17 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
   }
 );
 
-// virtual
-studentSchema.virtual("fullName").get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
+// middleware - query
+// studentSchema.pre("find", async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
 
 // middleware - query
-studentSchema.pre("find", async function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
-
-// middleware - query
-studentSchema.pre("aggregate", async function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
+// studentSchema.pre("aggregate", async function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 
 // custom statics methods
 studentSchema.statics.isUserExists = async function (id: string) {

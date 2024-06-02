@@ -9,7 +9,7 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  const stautsCode = httpStatus.INTERNAL_SERVER_ERROR;
+  const stautsCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
   const message = error.message || "Something went wrong";
   return res.status(stautsCode).json({
     success: false,
