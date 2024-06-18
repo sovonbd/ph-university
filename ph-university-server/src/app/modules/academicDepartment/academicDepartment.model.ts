@@ -5,33 +5,47 @@ import AppError from "../../errors/AppError";
 
 const academicDepartmentSchema = new Schema<TAcademicDepartment>(
   {
-    name: { type: String, required: true, unique: true },
-    academicFaculty: { type: Schema.Types.ObjectId, ref: "AcademicFaculty" },
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicFaculty",
+    },
   },
   {
-    timestamps: true, // createdAt and updatedAt
+    timestamps: true,
   }
 );
 
-// check department existence
 academicDepartmentSchema.pre("save", async function (next) {
-  const isDepartmentExists = await AcademicDepartment.findOne({
+  const isDepartmentExist = await AcademicDepartment.findOne({
     name: this.name,
   });
 
-  if (isDepartmentExists) {
-    throw new AppError(httpStatus.NOT_FOUND, "Department name already exists!");
+  if (isDepartmentExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "This department is already exist!"
+    );
   }
+
   next();
 });
 
 academicDepartmentSchema.pre("findOneAndUpdate", async function (next) {
   const query = this.getQuery();
-  const isDepartmentIdExists = await AcademicDepartment.findById(query);
+  const isDepartmentExist = await AcademicDepartment.findOne(query);
 
-  if (!isDepartmentIdExists) {
-    throw new AppError(httpStatus.NOT_FOUND, "This department does not exist!");
+  if (!isDepartmentExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "This department does not exist! "
+    );
   }
+
   next();
 });
 
