@@ -7,11 +7,13 @@ import { TErrorSources } from "../interface/error";
 import config from "../config";
 import handleZodError from "../errors/handleZodError";
 import handleValidationError from "../errors/handleValidationError";
+import handleCastError from "../errors/handleCastError";
+import handleDuplicateError from "../errors/handleDuplicateError";
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   // setting default values
   let statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-  let message = "Something went wrong";
+  let message = error.message || "Something went wrong";
 
   let errorSources: TErrorSources = [
     { path: "", message: "Something Went wrong" },
@@ -27,6 +29,16 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (error?.name === "CastError") {
+    const simplifiedError = handleCastError(error);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (error?.code === 11000) {
+    const simplifiedError = handleDuplicateError(error);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
   }
 
   // final return
@@ -35,6 +47,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     message,
     errorSources,
     stack: config.NODE_ENV === "development" ? error?.stack : null,
+    // error,
   });
 };
 
